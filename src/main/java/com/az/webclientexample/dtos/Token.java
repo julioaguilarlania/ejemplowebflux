@@ -2,6 +2,10 @@ package com.az.webclientexample.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
+
 public class Token {
     @JsonProperty("access_token")
     private String accessToken;
@@ -9,6 +13,17 @@ public class Token {
     private String tokenType;
     @JsonProperty("expires_in")
     private Integer expiresIn;
+
+    private Instant momentoExpiracion;
+
+    public void registrarToken(Token token) {
+        this.accessToken = token.getAccessToken();
+        this.tokenType = token.getTokenType();
+        this.expiresIn = token.expiresIn;
+        this.momentoExpiracion = Instant.now()
+                .plusSeconds(this.expiresIn)
+                .minusSeconds(60);
+    }
 
     public String getAccessToken() {
         return accessToken;
@@ -32,6 +47,10 @@ public class Token {
 
     public void setExpiresIn(Integer expiresIn) {
         this.expiresIn = expiresIn;
+    }
+
+    public boolean isExpired() {
+        return this.momentoExpiracion.isAfter(Instant.now());
     }
 
     @Override
