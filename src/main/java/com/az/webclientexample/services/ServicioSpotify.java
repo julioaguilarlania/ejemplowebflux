@@ -82,7 +82,7 @@ public class ServicioSpotify {
                 LOGGER.trace(t.toString());
                 tracks.add(new Track(
                         t.path("name").asText(),
-                        t.path("artist").path("name").asText()
+                        t.path("artists").elements().next().path("name").asText()
                 ));
             }
             return Flux.fromIterable(tracks);
