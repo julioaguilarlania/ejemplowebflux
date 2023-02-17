@@ -5,10 +5,9 @@ import com.az.webclientexample.dtos.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -16,6 +15,7 @@ import reactor.core.publisher.Mono;
 import static org.springframework.web.reactive.function.client.WebClient.*;
 
 import javax.annotation.PostConstruct;
+import java.net.URL;
 import java.util.Base64;
 
 @Component
@@ -36,18 +36,19 @@ public class AutenticadorSpotify {
     }
 
     private Token authToken;
-    public Token getAccessToken() {
+    public Mono<Token> getAccessToken() {
         LOGGER.debug("getAccessToken()");
         if (this.authToken== null || this.authToken.isExpired()) {
-            this.authToken = obtenerNuevoAccessToken();
+            return obtenerNuevoAccessToken();
         }
-        return authToken;
+        else {
+            return Mono.just(this.authToken);
+        }
     }
 
 
-    private Token obtenerNuevoAccessToken() {
+    private Mono<Token> obtenerNuevoAccessToken() {
         LOGGER.debug("obtenerNuevoAccessToken()");
-
         String b64Codes = Base64
                 .getEncoder()
                 .encodeToString((clientId + ":" + clientSecret).getBytes());
@@ -64,9 +65,19 @@ public class AutenticadorSpotify {
 //        Mono<String> response = respSepc.bodyToMono(String.class);
 //        LOGGER.trace(response.share().block());
         Mono<Token> response = respSepc.bodyToMono(Token.class);
+        return response.map(t -> registrarToken(t));
+        //return response.map(Token::registrarToken);
+        /*
         Token t = new Token();
         t.registrarToken(response.share().block());
         LOGGER.trace(t.toString());
+        return t;
+         */
+    }
+
+    Token registrarToken(Token t) {
+        t.calcularMomentoExpiracion();
+        this.authToken = t;
         return t;
     }
 }
