@@ -1,21 +1,16 @@
 package com.az.webclientexample.services;
 
-
 import com.az.webclientexample.dtos.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.web.reactive.function.client.WebClient.*;
-
-import javax.annotation.PostConstruct;
-import java.net.URL;
 import java.util.Base64;
 
 @Component
@@ -62,11 +57,8 @@ public class AutenticadorSpotify {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve();
-//        Mono<String> response = respSepc.bodyToMono(String.class);
-//        LOGGER.trace(response.share().block());
         Mono<Token> response = respSepc.bodyToMono(Token.class);
-        return response.map(t -> registrarToken(t));
-        //return response.map(Token::registrarToken);
+        return response.map(this::registrarToken);
         /*
         Token t = new Token();
         t.registrarToken(response.share().block());

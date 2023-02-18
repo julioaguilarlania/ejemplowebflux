@@ -55,10 +55,6 @@ public class ServicioSpotify {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve();
 
-        /*
-        Mono<String> response = respSpec.bodyToMono(String.class);
-        LOGGER.debug(response.share().block());
-         */
         return respSpec.bodyToMono(String.class)
                 .flatMapMany(this::parseTracks);
     }
