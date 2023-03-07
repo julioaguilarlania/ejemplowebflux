@@ -6,6 +6,7 @@ import com.az.webclientexample.persistence.RequestRepository;
 import com.az.webclientexample.services.ServicioClima;
 import com.az.webclientexample.services.ServicioPersistencia;
 import com.az.webclientexample.services.ServicioSpotify;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class Controlador {
     }
 
     @GetMapping(value="/musica", params = "ciudad")
+    @Operation(summary = "Obtiene una lista de canciones determinadas por la temperatura de la ciudad indicada")
     public Flux<Track> getCancionesPorClima(@RequestParam("ciudad") String ciudad) {
         return servicioClima.getTemperatura(ciudad)
                 .flatMap(t ->

@@ -57,8 +57,7 @@ public class AutenticadorSpotify {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve();
-        Mono<Token> response = respSepc.bodyToMono(Token.class);
-        return response.map(this::registrarToken);
+        return respSepc.bodyToMono(Token.class);
         /*
         Token t = new Token();
         t.registrarToken(response.share().block());
@@ -68,6 +67,7 @@ public class AutenticadorSpotify {
     }
 
     Token registrarToken(Token t) {
+        LOGGER.debug("registrarToken");
         t.calcularMomentoExpiracion();
         this.authToken = t;
         return t;
